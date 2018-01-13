@@ -1960,22 +1960,22 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
             pokemon_info = False
             encounter_retry = True
 
-            while not pokemon_info and encounter_retry:
-                if args.encounter and (pokemon_id in args.enc_whitelist):
+            if args.encounter and (pokemon_id in args.enc_whitelist):
+                while not pokemon_info and encounter_retry:
                     pokemon_info, encounter_retry = encounter_pokemon(
                         args, p, account, api, account_sets, status,
                         key_scheduler)
                     encounter_retry_count += 1
-                if encounter_retry_count >= 10:
-                    log.error('No L30 accounts are available, please' +
-                              ' consider adding more. Skipping encounter' +
-                              ' after 10 retries.')
-                    break
-                if pokemon_info or not encounter_retry:
-                    break
-                log.debug('Retry: %s for encountering a Pokemon.',
-                          encounter_retry_count)
-                time.sleep(randint(5, 30)*0.1)
+                    if encounter_retry_count >= 10:
+                        log.error('No L30 accounts are available, please' +
+                                  ' consider adding more. Skipping encounter' +
+                                  ' after 10 retries.')
+                        break
+                    if pokemon_info or not encounter_retry:
+                        break
+                    log.debug('Retry: %s for encountering a Pokemon.',
+                              encounter_retry_count)
+                    time.sleep(randint(1, 20)*0.1)
 
             pokemon[p.encounter_id] = {
                 'encounter_id': p.encounter_id,
