@@ -1958,23 +1958,24 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
 
             # Scan for IVs/CP and moves.
             pokemon_info = False
-            if args.encounter and (pokemon_id in args.enc_whitelist):
-                pokemon_info = encounter_pokemon(
-                    args, p, account, api, account_sets, status, key_scheduler)
-                # Retry the encounter if no accounts available
-                while not pokemon_info:
-                    if encounter_retry_count >= 10:
-                        log.error('No L30 accounts are available, please' +
-                                  ' consider adding more. Skipping encounter' +
-                                  ' after 10 retries.')
-                        break
-                    log.debug('Retry: %s for encountering a Pokemon.',
-                              encounter_retry_count)
-                    pokemon_info = encounter_pokemon(
+            encounter_retry = True
+
+            while not pokemon_info and encounter_retry:
+                if args.encounter and (pokemon_id in args.enc_whitelist):
+                    pokemon_info, encounter_retry = encounter_pokemon(
                         args, p, account, api, account_sets, status,
                         key_scheduler)
                     encounter_retry_count += 1
-                    time.sleep(randint(10, 50)*0.1)
+                if encounter_retry_count >= 10:
+                    log.error('No L30 accounts are available, please' +
+                              ' consider adding more. Skipping encounter' +
+                              ' after 10 retries.')
+                    break
+                if pokemon_info or not encounter_retry:
+                    break
+                log.debug('Retry: %s for encountering a Pokemon.',
+                          encounter_retry_count)
+                time.sleep(randint(5, 30)*0.1)
 
             pokemon[p.encounter_id] = {
                 'encounter_id': p.encounter_id,
@@ -2308,6 +2309,7 @@ def encounter_pokemon(args, pokemon, account, api, account_sets, status,
     hlvl_account = None
     pokemon_id = None
     result = False
+    can_retry = True
     try:
         hlvl_api = None
         pokemon_id = pokemon.pokemon_data.pokemon_id
@@ -2326,7 +2328,7 @@ def encounter_pokemon(args, pokemon, account, api, account_sets, status,
 
         # If we didn't get an account, we can't encounter.
         if not hlvl_account:
-            return False
+            return False, True
 
         # Logging.
         log.info('Encountering Pokemon ID %s with account %s at %s, %s.',
@@ -2379,7 +2381,7 @@ def encounter_pokemon(args, pokemon, account, api, account_sets, status,
             log.warning('Expected account of level 30 or higher, ' +
                         'but account %s is only level %d',
                         hlvl_account['username'], encounter_level)
-            return False
+            return False, False
 
         # Encounter Pokémon.
         encounter_result = encounter(
@@ -2400,6 +2402,7 @@ def encounter_pokemon(args, pokemon, account, api, account_sets, status,
                     log.error('Account %s encountered a captcha.' +
                               ' Account will not be used.',
                               hlvl_account['username'])
+                    can_retry = False
 
             if ('ENCOUNTER' in enc_responses and
                     enc_responses['ENCOUNTER'].status != 1):
@@ -2407,6 +2410,9 @@ def encounter_pokemon(args, pokemon, account, api, account_sets, status,
                           + 'account %s: %d.', pokemon_id,
                           hlvl_account['username'],
                           enc_responses['ENCOUNTER'].status)
+
+                if enc_responses['ENCOUNTER'].status != 0:
+                    can_retry = False
             else:
                 pokemon_info = enc_responses[
                     'ENCOUNTER'].wild_pokemon.pokemon_data
@@ -2419,6 +2425,7 @@ def encounter_pokemon(args, pokemon, account, api, account_sets, status,
                          pokemon_info.individual_stamina, pokemon_info.cp)
 
                 result = pokemon_info
+                can_retry = False
 
     except Exception as e:
         log.exception('There was an error encountering Pokemon ID %s with ' +
@@ -2432,7 +2439,7 @@ def encounter_pokemon(args, pokemon, account, api, account_sets, status,
     if using_accountset:
         account_sets.release(hlvl_account)
 
-    return result
+    return result, can_retry
 
 
 def parse_gyms(args, gym_responses, wh_update_queue, db_update_queue):
