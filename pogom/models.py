@@ -40,7 +40,7 @@ args = get_args()
 flaskDb = FlaskDB()
 cache = TTLCache(maxsize=100, ttl=60 * 5)
 
-db_schema_version = 23
+db_schema_version = 24
 
 
 class MyRetryDB(RetryOperationalError, PooledMySQLDatabase):
@@ -123,6 +123,7 @@ class Pokemon(LatLongModel):
     height = FloatField(null=True)
     gender = SmallIntegerField(null=True)
     form = SmallIntegerField(null=True)
+    weather_boosted_condition = SmallIntegerField(null=True)
     last_modified = DateTimeField(
         null=True, index=True, default=datetime.utcnow)
 
@@ -1978,8 +1979,15 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                 'height': None,
                 'weight': None,
                 'gender': p.pokemon_data.pokemon_display.gender,
-                'form': None
+                'form': None,
+                'weather_boosted_condition': None
+
             }
+
+            # Check Weather
+            weather = p.pokemon_data.pokemon_display.weather_boosted_condition
+            if weather:
+                pokemon[p.encounter_id]['weather_boosted_condition'] = weather
 
             # Check for Unown's alphabetic character.
             if pokemon_id == 201:
@@ -2996,7 +3004,8 @@ def database_migrate(db, old_ver):
                                 DateTimeField(
                                     null=False, default=datetime.utcnow())),
             migrator.add_column('gym', 'total_cp',
-                                SmallIntegerField(null=False, default=0)))
+                                SmallIntegerField(null=False, default=0))
+        )
 
     if old_ver < 21:
         # First rename all tables being modified.
@@ -3088,6 +3097,12 @@ def database_migrate(db, old_ver):
     if old_ver < 23:
         db.drop_tables([WorkerStatus])
         db.drop_tables([MainWorker])
+
+    if old_ver < 24:
+        migrate(
+            migrator.add_column('pokemon', 'weather_boosted_condition',
+                                SmallIntegerField(null=True))
+        )
 
     # Always log that we're done.
     log.info('Schema upgrade complete.')
