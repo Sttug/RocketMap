@@ -1988,12 +1988,12 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
             # Scan for IVs/CP and moves.
             pokemon_info = False
             encounter_retry = True
+
             if args.encounter and (pokemon_id in args.enc_whitelist):
                 while not pokemon_info and encounter_retry:
                     args, p, account, api, account_sets, status, key_scheduler)
                     pokemon_info, encounter_retry = encounter_pokemon(
-                        args, p, account, api, account_sets, status,
-                        key_scheduler)
+                        args, p, account, api, account_sets, status, key_scheduler)
                     encounter_retry_count += 1
                     if encounter_retry_count >= 10:
                         log.error('No L30 accounts are available, please' +
