@@ -2004,8 +2004,8 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                         break
                     log.debug('Retry: %s for encountering a Pokemon.',
                               encounter_retry_count)
-                              
-time.sleep(randint(1, 20)*0.1)
+                    time.sleep(randint(1, 20)*0.1)
+                    
             pokemon[p.encounter_id] = {
                 'encounter_id': p.encounter_id,
                 'spawnpoint_id': spawn_id,
