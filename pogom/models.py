@@ -2011,7 +2011,7 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
             }
             #check boosted_weather
             weather_present = p.pokemon_data.pokemon_display.weather_boosted_condition
-            if weather:
+            if weather_present:
                 pokemon[p.encounter_id]['weather'] = weather_present
 
             # Check for Unown's alphabetic character.
