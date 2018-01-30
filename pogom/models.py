@@ -123,7 +123,7 @@ class Pokemon(LatLongModel):
     height = FloatField(null=True)
     gender = SmallIntegerField(null=True)
     form = SmallIntegerField(null=True)
-    weather_id = SmallIntegerField(null=True)
+    weather = SmallIntegerField(null=True)
     last_modified = DateTimeField(
         null=True, index=True, default=datetime.utcnow)
 
@@ -2007,12 +2007,12 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                 'weight': None,
                 'gender': p.pokemon_data.pokemon_display.gender,
                 'form': None,
-                'weather_id': None
+                'weather': None
             }
             #check boosted_weather
-            weather = p.pokemon_data.pokemon_display.weather_boosted_condition
+            weather_present = p.pokemon_data.pokemon_display.weather
             if weather:
-                pokemon[p.encounter_id]['weather_id'] = weather
+                pokemon[p.encounter_id]['weather'] = weather_present
 
             # Check for Unown's alphabetic character.
             if pokemon_id == 201:
@@ -3231,9 +3231,9 @@ def database_migrate(db, old_ver):
             migrator.add_index('pokemon',
                                ('disappear_time', 'pokemon_id'), False)
         )
-    if old_ver < 25:
+    if old_ver < 26:
         migrate(
-            migrator.add_column('pokemon', 'weather_boosted_condition',
+            migrator.add_column('pokemon', 'weather',
                                 SmallIntegerField(null=True))
         )
 
