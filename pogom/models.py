@@ -123,7 +123,7 @@ class Pokemon(LatLongModel):
     height = FloatField(null=True)
     gender = SmallIntegerField(null=True)
     form = SmallIntegerField(null=True)
-    weather_boosted_condition = SmallIntegerField(null=True)
+    weather_boosted_condition = DoubleField(null=True)
     last_modified = DateTimeField(
         null=True, index=True, default=datetime.utcnow)
 
