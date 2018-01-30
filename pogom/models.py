@@ -2010,7 +2010,7 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                 'weather': None
             }
             #check boosted_weather
-            weather_present = p.pokemon_data.pokemon_display.weather
+            weather_present = p.pokemon_data.pokemon_display.weather_boosted_condition
             if weather:
                 pokemon[p.encounter_id]['weather'] = weather_present
 
