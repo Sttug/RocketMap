@@ -2014,7 +2014,8 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                 'gender': p.pokemon_data.pokemon_display.gender,
                 'costume': p.pokemon_data.pokemon_display.costume,
                 'form': p.pokemon_data.pokemon_display.form,
-                'weather': p.pokemon_data.pokemon_display.weather_boosted_condition
+                'weather':
+                p.pokemon_data.pokemon_display.weather_boosted_condition
             }
 
             # We need to check if exist and is not false due to a request error
@@ -3243,7 +3244,7 @@ def database_migrate(db, old_ver):
             # Add `costume` column to `gympokemon`
             migrator.add_column('gympokemon', 'costume',
                                 SmallIntegerField(null=True)))
-        
+
     if old_ver < 26:
         migrate(
             # Add `weather` column to `pokemon`
