@@ -123,6 +123,7 @@ class Pokemon(LatLongModel):
     gender = SmallIntegerField(null=True)
     costume = SmallIntegerField(null=True)
     form = SmallIntegerField(null=True)
+    weather = SmallIntegerField(null=True)
     last_modified = DateTimeField(
         null=True, index=True, default=datetime.utcnow)
 
@@ -2012,7 +2013,8 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                 'weight': None,
                 'gender': p.pokemon_data.pokemon_display.gender,
                 'costume': p.pokemon_data.pokemon_display.costume,
-                'form': p.pokemon_data.pokemon_display.form
+                'form': p.pokemon_data.pokemon_display.form,
+                'weather': p.pokemon_data.pokemon_display.weather_boosted_condition
             }
 
             # We need to check if exist and is not false due to a request error
@@ -3241,6 +3243,12 @@ def database_migrate(db, old_ver):
             # Add `costume` column to `gympokemon`
             migrator.add_column('gympokemon', 'costume',
                                 SmallIntegerField(null=True)))
+        
+    if old_ver < 26:
+        migrate(
+            # Add `weather` column to `pokemon`
+            migrator.add_column('pokemon', 'weather',
+                                SmallIntegerField(null=True))
 
     # Always log that we're done.
     log.info('Schema upgrade complete.')
