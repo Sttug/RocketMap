@@ -2009,10 +2009,11 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                 'form': None,
                 'weather': None
             }
-            #check boosted_weather
+            #check boosted_weather_pokemon
+            pokemon_weather = p.pokemon_data.pokemon_display.weather_boosted_condition
+            if pokemon_weather:
+                pokemon[p.encounter_id]['weather'] = pokemon_weather
             
-            pokemon[p.encounter_id]['weather'] = int(p.pokemon_data.pokemon_display.weather_boosted_condition)
-
             # Check for Unown's alphabetic character.
             if pokemon_id == 201:
                 pokemon[p.encounter_id]['form'] = (p.pokemon_data
