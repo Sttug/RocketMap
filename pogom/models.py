@@ -2014,13 +2014,9 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                 'gender': p.pokemon_data.pokemon_display.gender,
                 'costume': p.pokemon_data.pokemon_display.costume,
                 'form': p.pokemon_data.pokemon_display.form,
-                'weather': None
+                'weather': 
+                    p.pokemon_data.pokemon_display.weather_boosted_condition
             }
-            #check boosted_weather_pokemon
-            pokemon_weather = p.pokemon_data.pokemon_display.weather_boosted_condition
-            if pokemon_weather:
-                pokemon[p.encounter_id]['weather'] = pokemon_weather            
-
             # We need to check if exist and is not false due to a request error
             if pokemon_info:
                 pokemon[p.encounter_id].update({
