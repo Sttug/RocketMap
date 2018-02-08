@@ -2014,7 +2014,7 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                 'gender': p.pokemon_data.pokemon_display.gender,
                 'costume': p.pokemon_data.pokemon_display.costume,
                 'form': p.pokemon_data.pokemon_display.form,
-                'weather': 
+                'weather':
                     p.pokemon_data.pokemon_display.weather_boosted_condition
             }
             # We need to check if exist and is not false due to a request error
