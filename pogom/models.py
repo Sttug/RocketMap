@@ -3252,7 +3252,7 @@ def database_migrate(db, old_ver):
         migrate(
             # Add `weather` column to `pokemon`
             migrator.add_column('pokemon', 'weather',
-                                SmallIntegerField(null=True))
+                                SmallIntegerField(null=True)))
 
     # Always log that we're done.
     log.info('Schema upgrade complete.')
